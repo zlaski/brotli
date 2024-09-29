@@ -40,6 +40,12 @@
     <Filter Include="Header Files\c\enc">
       <UniqueIdentifier>{da29e5a3-59f7-4fdf-932b-1dbb4e63869c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\c\include">
+      <UniqueIdentifier>{ea386c7f-7b7b-46ee-ac1e-bd93a072f75f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\c\include\brotli">
+      <UniqueIdentifier>{19a6f8a5-0bd8-4411-b08f-31fd4f27e259}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="brotli.akibld.bat">
@@ -47,10 +53,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="brotli.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="brotli-resources.h" />
     <ClInclude Include="c\common\constants.h">
       <Filter>Header Files\c\common</Filter>
     </ClInclude>
@@ -225,11 +227,23 @@
     <ClInclude Include="c\enc\write_bits.h">
       <Filter>Header Files\c\enc</Filter>
     </ClInclude>
+    <ClInclude Include="c\include\brotli\decode.h">
+      <Filter>Header Files\c\include\brotli</Filter>
+    </ClInclude>
+    <ClInclude Include="c\include\brotli\encode.h">
+      <Filter>Header Files\c\include\brotli</Filter>
+    </ClInclude>
+    <ClInclude Include="c\include\brotli\port.h">
+      <Filter>Header Files\c\include\brotli</Filter>
+    </ClInclude>
+    <ClInclude Include="c\include\brotli\shared_dictionary.h">
+      <Filter>Header Files\c\include\brotli</Filter>
+    </ClInclude>
+    <ClInclude Include="c\include\brotli\types.h">
+      <Filter>Header Files\c\include\brotli</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="brotli.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="c\common\constants.c">
       <Filter>Source Files\c\common</Filter>
     </ClCompile>
