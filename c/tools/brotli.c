@@ -129,6 +129,7 @@ typedef struct {
   BROTLI_BOOL decompress;
   BROTLI_BOOL large_window;
   BROTLI_BOOL allow_concatenated;
+  BROTLI_BOOL write_grit_header;
   const char* output_path;
   const char* dictionary_path;
   const char* suffix;
@@ -367,6 +368,13 @@ static Command ParseParams(Context* params) {
           }
           params->force_overwrite = BROTLI_TRUE;
           continue;
+        } else if (c == 'g') {
+          if (params->write_grit_header) {
+            fprintf(stderr, "GRIT header output already set\n");
+            return COMMAND_INVALID;
+          }
+          params->write_grit_header = BROTLI_TRUE;
+          continue;
         } else if (c == 'h') {
           /* Don't parse further. */
           return COMMAND_HELP;
@@ -534,6 +542,13 @@ static Command ParseParams(Context* params) {
           return COMMAND_INVALID;
         }
         params->force_overwrite = BROTLI_TRUE;
+      }
+      else if (strcmp("grit-header", arg) == 0) {
+        if (params->write_grit_header) {
+          fprintf(stderr, "GRIT header output already set\n");
+          return COMMAND_INVALID;
+        }
+        params->write_grit_header = BROTLI_TRUE;
       } else if (strcmp("help", arg) == 0) {
         /* Don't parse further. */
         return COMMAND_HELP;
@@ -702,6 +717,9 @@ static Command ParseParams(Context* params) {
   if (!params->decompress && params->allow_concatenated) {
     return COMMAND_INVALID;
   }
+  if (params->write_grit_header && params->decompress) {
+    return COMMAND_INVALID;
+  }
   if (params->allow_concatenated && params->comment_len) {
     return COMMAND_INVALID;
   }
@@ -728,6 +746,7 @@ static void PrintHelp(const char* name, BROTLI_BOOL error) {
 "  -c, --stdout                write on standard output\n"
 "  -d, --decompress            decompress\n"
 "  -f, --force                 force output file overwrite\n"
+"  -g, --grit-header           prepend 8-byte GRIT header to output\n"
 "  -h, --help                  display this help and exit\n");
   fprintf(media,
 "  -j, --rm                    remove source file(s)\n"
@@ -1094,6 +1113,12 @@ static BROTLI_BOOL ProvideInput(Context* context) {
             PrintablePath(context->current_input_path), strerror(errno));
     return BROTLI_FALSE;
   }
+  if (context->available_in > 8
+      && context->next_in[0] == BROTLI_GRIT_HEADER_MAGIC_0
+      && context->next_in[1] == BROTLI_GRIT_HEADER_MAGIC_1) {
+    context->next_in += 8;
+    context->available_in -= 8;
+  }
   return BROTLI_TRUE;
 }
 
@@ -1345,6 +1370,24 @@ static BROTLI_BOOL CompressFile(Context* context, BrotliEncoderState* s) {
       is_eof = !HasMoreInput(context);
     }
 
+    if (context->write_grit_header) {
+      if (context->input_file_length < 0) {
+        fprintf(stderr, "Unable to generate GRIT header - input size unknown\n");
+        return BROTLI_FALSE;
+      }
+      /** See https://raw.githubusercontent.com/chromium/chromium/
+       *      HEAD/tools/grit/grit/node/base.py
+       * for a brief explanation of this format.
+       */
+      uint8_t* file_header = context->next_out;
+      file_header[0] = BROTLI_GRIT_HEADER_MAGIC_0;
+      file_header[1] = BROTLI_GRIT_HEADER_MAGIC_1;
+      *(uint32_t*)(file_header + 2) = (uint32_t)context->input_file_length;
+      *(uint16_t*)(file_header + 6) = (uint16_t)(context->input_file_length >> 32);
+      context->next_out += 8;
+      context->available_out -= 8;
+    }
+
     if (prologue) {
       prologue = BROTLI_FALSE;
       const uint8_t* next_meta = context->comment;
@@ -1477,6 +1520,7 @@ int main(int argc, char** argv) {
   context.decompress = BROTLI_FALSE;
   context.large_window = BROTLI_FALSE;
   context.allow_concatenated = BROTLI_FALSE;
+  context.write_grit_header = BROTLI_FALSE;
   context.output_path = NULL;
   context.dictionary_path = NULL;
   context.suffix = DEFAULT_SUFFIX;

@@ -70,7 +70,7 @@ BROTLI_BOOL BrotliEncoderSetParameter(
       return BROTLI_TRUE;
 
     case BROTLI_PARAM_QUALITY:
-      state->params.quality = (int)value;
+      state->params.quality = (int)(value & 0xFF);
       return BROTLI_TRUE;
 
     case BROTLI_PARAM_LGWIN:
@@ -1261,7 +1261,7 @@ BROTLI_BOOL BrotliEncoderCompress(
   const uint8_t* input_start = input_buffer;
   uint8_t* output_start = encoded_buffer;
   size_t max_out_size = BrotliEncoderMaxCompressedSize(input_size);
-  if (out_size == 0) {
+  if (out_size == 0 || (quality & BROTLI_GRIT_HEADER) && out_size < 9) {
     /* Output buffer needs at least one byte. */
     return BROTLI_FALSE;
   }
@@ -1283,16 +1283,34 @@ BROTLI_BOOL BrotliEncoderCompress(
     size_t total_out = 0;
     BROTLI_BOOL result = BROTLI_FALSE;
     /* TODO(eustas): check that parameters are sane. */
-    BrotliEncoderSetParameter(s, BROTLI_PARAM_QUALITY, (uint32_t)quality);
+    BrotliEncoderSetParameter(s, BROTLI_PARAM_QUALITY, (uint32_t)(quality & 0xFF));
     BrotliEncoderSetParameter(s, BROTLI_PARAM_LGWIN, (uint32_t)lgwin);
     BrotliEncoderSetParameter(s, BROTLI_PARAM_MODE, (uint32_t)mode);
     BrotliEncoderSetParameter(s, BROTLI_PARAM_SIZE_HINT, (uint32_t)input_size);
     if (lgwin > BROTLI_MAX_WINDOW_BITS) {
       BrotliEncoderSetParameter(s, BROTLI_PARAM_LARGE_WINDOW, BROTLI_TRUE);
     }
+    if (quality & BROTLI_GRIT_HEADER) {
+        /** See https://raw.githubusercontent.com/chromium/chromium/
+         *      HEAD/tools/grit/grit/node/base.py
+         * for a brief explanation of this format.
+         */
+        uint8_t* file_header = next_out;
+        uint64_t avail = available_in;
+        file_header[0] = BROTLI_GRIT_HEADER_MAGIC_0;
+        file_header[1] = BROTLI_GRIT_HEADER_MAGIC_1;
+        *(uint32_t *)(file_header + 2) = (uint32_t)avail;
+        *(uint16_t *)(file_header + 6) = (uint16_t)(avail >> 32);
+        next_out += 8;
+        available_out -= 8;
+        max_out_size += 8;
+    }
     result = BrotliEncoderCompressStream(s, BROTLI_OPERATION_FINISH,
         &available_in, &next_in, &available_out, &next_out, &total_out);
     if (!BrotliEncoderIsFinished(s)) result = 0;
+    if (quality & BROTLI_GRIT_HEADER) {
+        total_out += 8;
+    }
     *encoded_size = total_out;
     BrotliEncoderDestroyInstance(s);
     if (!result || (max_out_size && *encoded_size > max_out_size)) {

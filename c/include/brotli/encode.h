@@ -64,6 +64,13 @@ typedef enum BrotliEncoderMode {
 /** Default value for ::BROTLI_PARAM_MODE parameter. */
 #define BROTLI_DEFAULT_MODE BROTLI_MODE_GENERIC
 
+/** OR with ::BROTLI_PARAM_QUALITY to generate an 8-byte
+ * 'grit' file header, as briefly described in
+ * https://raw.githubusercontent.com/chromium/chromium/
+ *     HEAD/tools/grit/grit/node/base.py.
+ */
+#define BROTLI_GRIT_HEADER 256
+
 /** Operations that can be performed by streaming encoder. */
 typedef enum BrotliEncoderOperation {
   /**

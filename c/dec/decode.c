@@ -2323,8 +2323,13 @@ BrotliDecoderResult BrotliDecoderDecompress(
   if (!BrotliDecoderStateInit(&s, 0, 0, 0)) {
     return BROTLI_DECODER_RESULT_ERROR;
   }
+  if (available_in > 8 && next_in[0] == BROTLI_GRIT_HEADER_MAGIC_0
+      && next_in[1] == BROTLI_GRIT_HEADER_MAGIC_1) {
+    next_in += 8;
+    available_in -= 8;
+  }
   result = BrotliDecoderDecompressStream(
-      &s, &available_in, &next_in, &available_out, &next_out, &total_out);
+    &s, &available_in, &next_in, &available_out, &next_out, &total_out);
   *decoded_size = total_out;
   BrotliDecoderStateCleanup(&s);
   if (result != BROTLI_DECODER_RESULT_SUCCESS) {
