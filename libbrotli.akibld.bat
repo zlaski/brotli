@@ -18,7 +18,12 @@ if /i "%EVENT%" == "PreLinkEvent" (
 )
 
 if /i "%EVENT%" == "PostBuildEvent" (
-    rem Implement PostBuildEvent
+    mkdir %SolutionDir%.install\%Platform%-%Configuration%\include\brotli 2>nul
+    echo %ProjectDir%c\include\brotli\*.h -^> %SolutionDir%.install\%Platform%-%Configuration%\include\brotli
+    attrib -R %SolutionDir%.install\%Platform%-%Configuration%\include\brotli\*.h >nul
+    copy /y %ProjectDir%c\include\brotli\*.h %SolutionDir%.install\%Platform%-%Configuration%\include\brotli >nul
+    attrib +R %SolutionDir%.install\%Platform%-%Configuration%\include\brotli\*.h
+
     exit /b 0
 )
 

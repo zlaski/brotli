@@ -1,0 +1,2 @@
+// brotli.h
+#pragma once

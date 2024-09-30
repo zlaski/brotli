@@ -1,116 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <SubSystem>Console</SubSystem>
   </PropertyGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(AKITOOLS)\akibld\akibld.props" />
   </ImportGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{97387448-6F05-4A23-8971-6EC60D90D751}</ProjectGuid>
+    <ProjectGuid>{886484C7-9C4B-43CC-9735-3D5C501D609F}</ProjectGuid>
   </PropertyGroup>
   <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>libbrotli.lib;akilib.lib;windows-amalgamated.lib;libc-amalgamated.lib;legacy_stdio_definitions.lib;ntdll.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)c\include;$(IntDir);$(Install_IncludePath);$(UCRT_IncludePath);$(UM_IncludePath);$(KIT_SHARED_IncludePath)\;$(KM_IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4005</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="c\common\constants.c" />
-    <ClCompile Include="c\common\context.c" />
-    <ClCompile Include="c\common\dictionary.c" />
-    <ClCompile Include="c\common\platform.c" />
-    <ClCompile Include="c\common\shared_dictionary.c" />
-    <ClCompile Include="c\common\transform.c" />
-    <ClCompile Include="c\dec\bit_reader.c" />
-    <ClCompile Include="c\dec\decode.c" />
-    <ClCompile Include="c\dec\huffman.c" />
-    <ClCompile Include="c\dec\state.c" />
-    <ClCompile Include="c\enc\backward_references.c" />
-    <ClCompile Include="c\enc\backward_references_hq.c" />
-    <ClCompile Include="c\enc\bit_cost.c" />
-    <ClCompile Include="c\enc\block_splitter.c" />
-    <ClCompile Include="c\enc\brotli_bit_stream.c" />
-    <ClCompile Include="c\enc\cluster.c" />
-    <ClCompile Include="c\enc\command.c" />
-    <ClCompile Include="c\enc\compound_dictionary.c" />
-    <ClCompile Include="c\enc\compress_fragment.c" />
-    <ClCompile Include="c\enc\compress_fragment_two_pass.c" />
-    <ClCompile Include="c\enc\dictionary_hash.c" />
-    <ClCompile Include="c\enc\encode.c" />
-    <ClCompile Include="c\enc\encoder_dict.c" />
-    <ClCompile Include="c\enc\entropy_encode.c" />
-    <ClCompile Include="c\enc\fast_log.c" />
-    <ClCompile Include="c\enc\histogram.c" />
-    <ClCompile Include="c\enc\literal_cost.c" />
-    <ClCompile Include="c\enc\memory.c" />
-    <ClCompile Include="c\enc\metablock.c" />
-    <ClCompile Include="c\enc\static_dict.c" />
-    <ClCompile Include="c\enc\utf8_util.c" />
+    <ClInclude Include="brotli-resources.h" />
+    <ClInclude Include="brotli.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="c\common\constants.h" />
-    <ClInclude Include="c\common\context.h" />
-    <ClInclude Include="c\common\dictionary.h" />
-    <ClInclude Include="c\common\platform.h" />
-    <ClInclude Include="c\common\shared_dictionary_internal.h" />
-    <ClInclude Include="c\common\transform.h" />
-    <ClInclude Include="c\common\version.h" />
-    <ClInclude Include="c\dec\bit_reader.h" />
-    <ClInclude Include="c\dec\huffman.h" />
-    <ClInclude Include="c\dec\prefix.h" />
-    <ClInclude Include="c\dec\state.h" />
-    <ClInclude Include="c\enc\backward_references.h" />
-    <ClInclude Include="c\enc\backward_references_hq.h" />
-    <ClInclude Include="c\enc\backward_references_inc.h" />
-    <ClInclude Include="c\enc\bit_cost.h" />
-    <ClInclude Include="c\enc\bit_cost_inc.h" />
-    <ClInclude Include="c\enc\block_encoder_inc.h" />
-    <ClInclude Include="c\enc\block_splitter.h" />
-    <ClInclude Include="c\enc\block_splitter_inc.h" />
-    <ClInclude Include="c\enc\brotli_bit_stream.h" />
-    <ClInclude Include="c\enc\cluster.h" />
-    <ClInclude Include="c\enc\cluster_inc.h" />
-    <ClInclude Include="c\enc\command.h" />
-    <ClInclude Include="c\enc\compound_dictionary.h" />
-    <ClInclude Include="c\enc\compress_fragment.h" />
-    <ClInclude Include="c\enc\compress_fragment_two_pass.h" />
-    <ClInclude Include="c\enc\dictionary_hash.h" />
-    <ClInclude Include="c\enc\encoder_dict.h" />
-    <ClInclude Include="c\enc\entropy_encode.h" />
-    <ClInclude Include="c\enc\entropy_encode_static.h" />
-    <ClInclude Include="c\enc\fast_log.h" />
-    <ClInclude Include="c\enc\find_match_length.h" />
-    <ClInclude Include="c\enc\hash.h" />
-    <ClInclude Include="c\enc\hash_composite_inc.h" />
-    <ClInclude Include="c\enc\hash_forgetful_chain_inc.h" />
-    <ClInclude Include="c\enc\hash_longest_match64_inc.h" />
-    <ClInclude Include="c\enc\hash_longest_match64_simd_inc.h" />
-    <ClInclude Include="c\enc\hash_longest_match_inc.h" />
-    <ClInclude Include="c\enc\hash_longest_match_quickly_inc.h" />
-    <ClInclude Include="c\enc\hash_longest_match_simd_inc.h" />
-    <ClInclude Include="c\enc\hash_rolling_inc.h" />
-    <ClInclude Include="c\enc\hash_to_binary_tree_inc.h" />
-    <ClInclude Include="c\enc\histogram.h" />
-    <ClInclude Include="c\enc\histogram_inc.h" />
-    <ClInclude Include="c\enc\literal_cost.h" />
-    <ClInclude Include="c\enc\matching_tag_mask.h" />
-    <ClInclude Include="c\enc\memory.h" />
-    <ClInclude Include="c\enc\metablock.h" />
-    <ClInclude Include="c\enc\metablock_inc.h" />
-    <ClInclude Include="c\enc\params.h" />
-    <ClInclude Include="c\enc\prefix.h" />
-    <ClInclude Include="c\enc\quality.h" />
-    <ClInclude Include="c\enc\ringbuffer.h" />
-    <ClInclude Include="c\enc\state.h" />
-    <ClInclude Include="c\enc\static_dict.h" />
-    <ClInclude Include="c\enc\static_dict_lut.h" />
-    <ClInclude Include="c\enc\utf8_util.h" />
-    <ClInclude Include="c\enc\write_bits.h" />
-    <ClInclude Include="c\include\brotli\decode.h" />
-    <ClInclude Include="c\include\brotli\encode.h" />
-    <ClInclude Include="c\include\brotli\port.h" />
-    <ClInclude Include="c\include\brotli\shared_dictionary.h" />
-    <ClInclude Include="c\include\brotli\types.h" />
+    <Image Include="brotli.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="brotli.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="brotli.akibld.bat" />
@@ -119,6 +35,12 @@
     <ProjectReference Include="$(AKIROOT)\svn\akisystems\akilib\akilib.vcxproj">
       <Project>{0A19BC1F-D9EA-4438-BA0D-2E42C97FC45D}</Project>
     </ProjectReference>
+    <ProjectReference Include="libbrotli.vcxproj">
+      <Project>{97387448-6f05-4a23-8971-6ec60d90d751}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="c\tools\brotli.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
