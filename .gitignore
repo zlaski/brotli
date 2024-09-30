@@ -19,3 +19,5 @@ __pycache__/
 *.br
 *.unbr
 /.build
+/.install
+/.vs
